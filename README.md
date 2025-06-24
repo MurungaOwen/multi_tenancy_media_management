@@ -38,9 +38,11 @@ This system provides:
    
    Create a `.env` file in the project root:
    ```env
-   DATABASE_URL=postgres://youruser:yourpassword@localhost:5432/yourdb
-   SECRET_KEY=your-secret-key-here
-   DEBUG=True
+    DB_NAME=media_management
+    DB_USER=media_user
+    DB_PASSWORD=media_password
+    DB_HOST=localhost
+    DB_PORT=5432
    ```
 Then move to src folder
 ```sh
