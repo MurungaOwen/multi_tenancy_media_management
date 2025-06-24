@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Documents</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .header {
+            padding: 40px 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .header h2 {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            opacity: 0.9;
+            font-size: 16px;
+        }
+
+        .controls {
+            padding: 30px 40px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 45px 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .search-box .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .content {
+            padding: 0 40px 40px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .documents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .document-card {
+            background: white;
+            border: 2px solid #f1f3f4;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .document-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.1);
+        }
+
+        .document-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .document-icon {
+            font-size: 32px;
+            margin-right: 15px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .document-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            word-break: break-word;
+        }
+
+        .document-meta {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .document-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .view-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .view-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+        }
+
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state .empty-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .empty-state p {
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .table-toggle {
+            background: none;
+            border: 1px solid #e1e5e9;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.2s;
+        }
+
+        .table-toggle:hover {
+            background: #f8f9fa;
+        }
+
+        .table-toggle.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .table-view {
+            display: none;
+            overflow-x: auto;
+        }
+
+        .table-view.active {
+            display: block;
+        }
+
+        .documents-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .documents-table th {
+            background: #f8f9fa;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e1e5e9;
+        }
+
+        .documents-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f1f3f4;
+            vertical-align: middle;
+        }
+
+        .documents-table tr:hover {
+            background: #f8f9ff;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .header, .controls, .content {
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                max-width: none;
+            }
+
+            .documents-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>📁 Your Documents</h2>
+            <p class="subtitle">Securely encrypted and safely stored</p>
+        </div>
+
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" placeholder="Search documents..." id="searchInput">
+                <span class="search-icon">🔍</span>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="table-toggle" id="viewToggle">📋 Table View</button>
+                <a href="{% url 'upload_encrypted_batch' %}" class="upload-btn">
+                    ➕ Upload More
+                </a>
+            </div>
+        </div>
+
+        <div class="content">
+            {% if documents %}
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value">{{ documents|length }}</div>
+                        <div class="stat-label">Total Documents</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">🔒</div>
+                        <div class="stat-label">All Encrypted</div>
+                    </div>
+                </div>
+
+                <div class="documents-grid" id="gridView">
+                    {% for doc in documents %}
+                    <div class="document-card" data-name="{{ doc.name|lower }}" data-type="{{ doc.mime_type|lower }}">
+                        <div class="document-header">
+                            <div class="document-icon">
+                                {% if 'image' in doc.mime_type %}🖼️
+                                {% elif 'video' in doc.mime_type %}🎥
+                                {% elif 'audio' in doc.mime_type %}🎵
+                                {% elif 'pdf' in doc.mime_type %}📄
+                                {% elif 'word' in doc.mime_type %}📝
+                                {% elif 'excel' in doc.mime_type or 'spreadsheet' in doc.mime_type %}📊
+                                {% elif 'powerpoint' in doc.mime_type or 'presentation' in doc.mime_type %}📋
+                                {% else %}📁
+                                {% endif %}
+                            </div>
+                            <div class="document-info">
+                                <h3>{{ doc.name }}</h3>
+                                <div class="document-meta">
+                                    <span>{{ doc.mime_type }}</span>
+                                    {% if doc.uploaded_at %}
+                                    <span>•</span>
+                                    <span>{{ doc.uploaded_at|date:"M d, Y" }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="document-actions">
+                            <a href="{% url 'view_document' doc.id %}" class="action-btn view-btn" target="_blank">
+                                👁️ View
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="table-view" id="tableView">
+                    <table class="documents-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Document Name</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for doc in documents %}
+                            <tr data-name="{{ doc.name|lower }}" data-type="{{ doc.mime_type|lower }}">
+                                <td>{{ forloop.counter }}</td>
+                                <td>
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <span style="font-size: 20px;">
+                                            {% if 'image' in doc.mime_type %}🖼️
+                                            {% elif 'video' in doc.mime_type %}🎥
+                                            {% elif 'audio' in doc.mime_type %}🎵
+                                            {% elif 'pdf' in doc.mime_type %}📄
+                                            {% elif 'word' in doc.mime_type %}📝
+                                            {% elif 'excel' in doc.mime_type or 'spreadsheet' in doc.mime_type %}📊
+                                            {% elif 'powerpoint' in doc.mime_type or 'presentation' in doc.mime_type %}📋
+                                            {% else %}📁
+                                            {% endif %}
+                                        </span>
+                                        {{ doc.name }}
+                                    </div>
+                                </td>
+                                <td>{{ doc.mime_type }}</td>
+                                <td>
+                                    {% if doc.uploaded_at %}
+                                        {{ doc.uploaded_at|date:"M d, Y H:i" }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div style="display: flex; gap: 5px;">
+                                        <a href="{% url 'view_document' doc.id %}" class="action-btn view-btn" target="_blank" style="flex: none; padding: 6px 12px;">
+                                            👁️ View
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <div class="empty-icon">📂</div>
+                    <h3>No documents uploaded yet</h3>
+                    <p>Start by uploading your first encrypted document</p>
+                    <a href="{% url 'upload_encrypted_batch' %}" class="upload-btn">
+                        ➕ Upload Your First Document
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const gridView = document.getElementById('gridView');
+        const tableView = document.getElementById('tableView');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            
+            // Search in grid view
+            const gridCards = gridView.querySelectorAll('.document-card');
+            gridCards.forEach(card => {
+                const name = card.getAttribute('data-name');
+                const type = card.getAttribute('data-type');
+                const isVisible = name.includes(searchTerm) || type.includes(searchTerm);
+                card.style.display = isVisible ? 'block' : 'none';
+            });
+
+            // Search in table view
+            const tableRows = tableView.querySelectorAll('tbody tr');
+            tableRows.forEach(row => {
+                const name = row.getAttribute('data-name');
+                const type = row.getAttribute('data-type');
+                const isVisible = name.includes(searchTerm) || type.includes(searchTerm);
+                row.style.display = isVisible ? '' : 'none';
+            });
+        });
+
+        // View toggle functionality
+        const viewToggle = document.getElementById('viewToggle');
+        let isTableView = false;
+
+        viewToggle.addEventListener('click', function() {
+            isTableView = !isTableView;
+            
+            if (isTableView) {
+                gridView.style.display = 'none';
+                tableView.classList.add('active');
+                viewToggle.textContent = '🗂️ Grid View';
+                viewToggle.classList.add('active');
+            } else {
+                gridView.style.display = 'grid';
+                tableView.classList.remove('active');
+                viewToggle.textContent = '📋 Table View';
+                viewToggle.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>
